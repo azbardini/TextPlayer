@@ -6,3 +6,5 @@ Trabalho da disciplina de Técnicas de Construção de Programas, da UFRGS.
 
 - Augusto Bardini
 - Andrei Rodrigues
+
+Using [gitmoji](https://gitmoji.carloscuesta.me/)!

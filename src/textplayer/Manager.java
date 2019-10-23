@@ -40,30 +40,14 @@ public class Manager {
         try {
             MidiFileManager.savePatternToMidi(pattern, new File("JFugue.mid"));
         } catch (Exception e) {
-            System.out.println("fudeu");
+            System.out.println("Error saving MIDI file");
+            System.exit(0);
         }
     }
 
-    public void playGeneralSong() {
+    public void playTestSong(){
         Player player = new Player();
-        Pattern p1 = new Pattern("C4 Fb4 A4 C5 Fb5 A5 C6 Fb6 A6 Fb6 C6 A5 Fb5 C5 A4 Fb4 ")
-                .setVoice(0).setInstrument("Flute").setTempo(500);
-        Pattern p2 = new Pattern("C4 Fb4 A4 C5 Fb5 A5 C6 Fb6 A6 Fb6 C6 A5 Fb5 C5 A4 Fb4 ")
-                .setVoice(1).setInstrument("Flute").setTempo(500);
-//
-//        Pattern p3 = new Pattern("C4 Fb4 A4 C5 Fb5 A5 C6 Fb6 A6 Fb6 C6 A5 Fb5 C5 A4 Fb4 ")
-//                .setVoice(0).setInstrument("Flute").setTempo(800);
-//        Pattern p4 = new Pattern("Fb4 A4 C5 Fb5 A5 C6 Fb6 A6 C7 C6 A5 Fb5 C5 A4 Fb4 C4 ")
-//                .setVoice(1).setInstrument("Flute").setTempo(500);
-//        
-//        Pattern p5 = new Pattern("Fb6 C6 A5 Fb6 C6 A5 Fb6 C6 A5 Fb6 C6 A5 F#6 A5 F6 A5 ")
-//                .setVoice(0).setInstrument("Flute").setTempo(500);
-//        Pattern p6 = new Pattern("Fb6 C6 A5 Fb6 C6 A5 Fb6 C6 A5 Fb6 C6 A5 F#6 A5 F6 A5 ")
-//                .setVoice(1).setInstrument("Flute").setTempo(500);
-// 
-//        Pattern p7 = new Pattern("Fb6 C6 A5 Fb6 C6 A5 Fb6 C6 A5 Fb6 C6 A5 F#6 A5 F6 A5 Fb6qqq Fb6qqq Fb6")
-//                .setVoice(0).setInstrument("Flute").setTempo(500);
-//        Pattern p8 = new Pattern("A6 Fb6 C6 A6 Fb6 C6 A6 Fb6 C6 A6 Fb6 C6 B6 B5 G#6 ")
-//                .setVoice(1).setInstrument("Flute").setTempo(500);
+        Pattern p1 = new Pattern(":CON(4, 63) C5 C5 C5 :CON(7, 127) C5 C5 C5");
+        player.play(p1);
     }
 }

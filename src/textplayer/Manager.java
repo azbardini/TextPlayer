@@ -16,9 +16,9 @@ import org.jfugue.player.Player;
  */
 public class Manager {
 
-    private String executionStatus;
-    private String rawText;
-    private Interpreter interpreter;
+    private final String executionStatus;
+    private final String rawText;
+    private final Interpreter interpreter;
 
     public Manager(String rawText, Interpreter interpreter) {
         this.executionStatus = "stopped";

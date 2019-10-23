@@ -17,14 +17,15 @@ public class TextPlayer {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String rawText = "!AAAoAAA";
-        
+        String rawText = "CDEFGAB";
+
         CurrentStatus currentStatus = new CurrentStatus();
         Interpreter interpreter = new Interpreter(rawText, currentStatus);
         Manager manager = new Manager(interpreter.getRawText(), interpreter);
 
-        String playable = interpreter.translate();       
+        String playable = interpreter.translate();
         System.out.println(playable);
-        manager.playSong(playable);
-    }    
+//        manager.playSong(playable);
+        manager.playTestSong();
+    }
 }

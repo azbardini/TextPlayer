@@ -18,13 +18,14 @@ public class TextPlayer {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String rawtext = "tirolirotiroliro";
+        String rawText = "!AAAoAAA";
         
         CurrentStatus currentStatus = new CurrentStatus();
-        Interpreter interpreter = new Interpreter(rawtext, currentStatus);
+        Interpreter interpreter = new Interpreter(rawText, currentStatus);
         Manager manager = new Manager(interpreter.getRawText(), interpreter);
-        
-        System.out.println("Tempo = " + Integer.toString(currentStatus.getTempo()));
-        manager.playSong();
+
+        String playable = interpreter.translate();       
+        System.out.println(playable);
+        manager.playSong(playable);
     }    
 }

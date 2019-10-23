@@ -14,18 +14,18 @@ public class CurrentStatus {
     private int volume;
     private int octave;
     private int tempo;
-    private int instrument;
+    private String instrument;
     private String lastCharacter;
 
     public CurrentStatus() {
         this.volume = 10;
         this.octave = 5;
-        this.tempo = 200;
-        this.instrument = 1;
-        this.lastCharacter = "Z";
+        this.tempo = 120;
+        this.instrument = "0";
+        this.lastCharacter = "";
     }
 
-    public CurrentStatus(int volume, int octave, int tempo, int instrument, String lastCharacter) {
+    public CurrentStatus(int volume, int octave, int tempo, String instrument, String lastCharacter) {
         this.volume = volume;
         this.octave = octave;
         this.tempo = tempo;
@@ -41,7 +41,7 @@ public class CurrentStatus {
         this.volume = volume;
     }
 
-    public String getLastCharacterString() {
+    public String getLastCharacter() {
         return lastCharacter;
     }
 
@@ -49,12 +49,12 @@ public class CurrentStatus {
         this.lastCharacter = lastCharacter;
     }
 
-    public String getOctaveString() {
-        return Integer.toString(octave);
+    public int getOctave() {
+        return octave;
     }
 
     public void setOctave(int octave) {
-        this.octave = octave;
+        this.octave = octave > 10 ? 5 : octave;
     }
 
     public String getTempo() {
@@ -66,10 +66,10 @@ public class CurrentStatus {
     }
 
     public String getInstrument() {
-        return Integer.toString(instrument);
+        return instrument;
     }
 
-    public void setInstrument(int instrument) {
+    public void setInstrument(String instrument) {
         this.instrument = instrument;
     }
 }

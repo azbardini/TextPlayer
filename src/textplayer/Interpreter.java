@@ -34,57 +34,95 @@ public class Interpreter {
         notesDictionary.put('F', "F");
         notesDictionary.put('G', "G");
 
-        instrumentsDictionary.put('!', "I114");
-        instrumentsDictionary.put('o', "I7");
-        instrumentsDictionary.put('O', "I7");
-        instrumentsDictionary.put('i', "I7");
-        instrumentsDictionary.put('I', "I7");
-        instrumentsDictionary.put('u', "I7");
-        instrumentsDictionary.put('U', "I7");
-        instrumentsDictionary.put('\n', "I15");
-        instrumentsDictionary.put(';', "I76");
-        instrumentsDictionary.put(',', "I20");
+        instrumentsDictionary.put('!', "114");
+        instrumentsDictionary.put('o', "7");
+        instrumentsDictionary.put('O', "7");
+        instrumentsDictionary.put('i', "7");
+        instrumentsDictionary.put('I', "7");
+        instrumentsDictionary.put('u', "7");
+        instrumentsDictionary.put('U', "7");
+        instrumentsDictionary.put('\n', "15");
+        instrumentsDictionary.put(';', "76");
+        instrumentsDictionary.put(',', "20");
 
         String onBuildString = "";
-        String currentCharacter = "";
+        String translatedCharacter = "";
+        String currentInstrument = "";
+        String newInstrument = "";
+        int currentOctave;
+        int newOctave;
+        int newInstrumentNumber;
+        for (char character : this.rawText.toCharArray()) {
 
-        for (char charactere : this.rawText.toCharArray()) {
-            //Try to translate from the instruments map
-            try {
+            //===FIRST CONTROL LAYER===
+            //0 1 2 3 4 5 6 7 8 9
+            if (Character.isDigit(character)) {
+                currentInstrument = currentStatus.getInstrument();
+                newInstrumentNumber = Integer.parseInt(currentInstrument) + Character.getNumericValue(character);
+                newInstrumentNumber = newInstrumentNumber > 127 ? 127 : newInstrumentNumber;
+                newInstrument = Integer.toString(newInstrumentNumber);
+                currentStatus.setInstrument(newInstrument);
+                translatedCharacter = "I".concat(newInstrument);
+                onBuildString = onBuildString.concat(translatedCharacter);
+            } else {
 
-                currentCharacter = mapInstrumentToString(charactere);
-                onBuildString = onBuildString.concat(currentCharacter);
-            } catch (Exception noInstrumentException) {
-                //Try to translate from the notes map
-                try {
-                    currentCharacter = mapNoteToString(charactere);
-                    onBuildString = onBuildString.concat(currentCharacter);
-                    //Adds on the current octave
-                    onBuildString = onBuildString.concat(this.currentStatus.getOctaveString());
-                    currentStatus.setLastCharacter(currentCharacter);
-                } catch (Exception noNoteException) {
-                    currentCharacter = getDoubleOrRest(charactere);
+                //? .
+                if (character == '?' || character == '.') {
+                    currentOctave = currentStatus.getOctave();
+                    newOctave = ++currentOctave;
+                    currentStatus.setOctave(newOctave);
+                } else {
+
+                    //Try to translate from the instruments map
+                    //! i I o O u U NL ; ,
+                    try {
+                        newInstrument = mapInstrumentToString(character);
+                        currentStatus.setInstrument(newInstrument);
+                        translatedCharacter = "I".concat(newInstrument);
+                        onBuildString = onBuildString.concat(translatedCharacter);
+                    } catch (Exception noInstrumentException) {
+
+                        //===THEN NOTES LAYER===
+                        //Try to translate from the notes map
+                        //A B C D E F G
+                        try {
+                            translatedCharacter = mapNoteToString(character);
+                            onBuildString = onBuildString.concat(translatedCharacter);
+                            //Adds on the current octave
+                            onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
+                        } catch (Exception noNoteException) {
+
+                            //a c b d e f g consoantes todo o resto
+                            translatedCharacter = getDoubleOrRest();
+                            onBuildString = onBuildString.concat(translatedCharacter);
+                            //Adds on the current octave
+                            onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
+                        }
+                    }
                 }
             }
             onBuildString = onBuildString.concat(space);
+            currentStatus.setLastCharacter(Character.toString(character));
         }
         return onBuildString;
     }
 
-    public String mapNoteToString(char charactere) {
-        return notesDictionary.get(charactere).toString();
+    public String mapNoteToString(char character) {
+        return notesDictionary.get(character).toString();
     }
 
-    public String mapInstrumentToString(char charactere) {
-        return instrumentsDictionary.get(charactere).toString();
+    public String mapInstrumentToString(char character) {
+        return instrumentsDictionary.get(character).toString();
     }
 
-    public String getDoubleOrRest(char currentCharacter) {
+    public String getDoubleOrRest() {
         String restBeat = "R";
-        String lastCharacter = this.currentStatus.getLastCharacterString();
-        String currentTreatedCharacter = Character.toString(currentCharacter).toUpperCase();
-
-        return (lastCharacter.equals(currentTreatedCharacter) ? currentTreatedCharacter : restBeat);
+        try {
+            String lastCharacter = this.currentStatus.getLastCharacter();
+            return mapNoteToString(lastCharacter.charAt(0));
+        } catch (Exception noNoteException) {
+            return restBeat;
+        }
     }
 
     public String getRawText() {

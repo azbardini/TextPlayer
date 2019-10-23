@@ -9,7 +9,6 @@ import java.io.File;
 import org.jfugue.midi.MidiFileManager;
 import org.jfugue.pattern.Pattern;
 import org.jfugue.player.Player;
-import org.jfugue.theory.ChordProgression;
 
 /**
  *
@@ -17,9 +16,9 @@ import org.jfugue.theory.ChordProgression;
  */
 public class Manager {
 
-    private String executionStatus;
-    private String rawText;
-    private Interpreter interpreter;
+    private final String executionStatus;
+    private final String rawText;
+    private final Interpreter interpreter;
 
     public Manager(String rawText, Interpreter interpreter) {
         this.executionStatus = "stopped";

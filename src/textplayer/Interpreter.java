@@ -47,11 +47,14 @@ public class Interpreter {
 
         String onBuildString;
         String translatedCharacter;
-        String currentInstrument;
+
+        int currentInstrumentNumber;
+        int newInstrumentNumber;
         String newInstrument;
+
         int currentOctave;
         int newOctave;
-        int newInstrumentNumber;
+
         int currentVolume;
         int newVolume;
 
@@ -72,12 +75,11 @@ public class Interpreter {
 
                 //0 1 2 3 4 5 6 7 8 9
                 if (Character.isDigit(character)) {
-                    currentInstrument = currentStatus.getInstrument();
-                    newInstrumentNumber = Integer.parseInt(currentInstrument) + Character.getNumericValue(character);
+                    currentInstrumentNumber = currentStatus.getInstrument();
+                    newInstrumentNumber = currentInstrumentNumber + Character.getNumericValue(character);
                     newInstrumentNumber = newInstrumentNumber > 127 ? 127 : newInstrumentNumber;
-                    newInstrument = Integer.toString(newInstrumentNumber);
-                    currentStatus.setInstrument(newInstrument);
-                    translatedCharacter = "I".concat(newInstrument);
+                    currentStatus.setInstrument(newInstrumentNumber);
+                    translatedCharacter = "I".concat(Integer.toString(newInstrumentNumber));
                     onBuildString = onBuildString.concat(translatedCharacter);
                 } else {
 
@@ -92,7 +94,7 @@ public class Interpreter {
                         //! i I o O u U NL ; ,
                         try {
                             newInstrument = mapInstrumentToString(character);
-                            currentStatus.setInstrument(newInstrument);
+                            currentStatus.setInstrument(Integer.parseInt(newInstrument));
                             translatedCharacter = "I".concat(newInstrument);
                             onBuildString = onBuildString.concat(translatedCharacter);
                         } catch (Exception noInstrumentException) {

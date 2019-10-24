@@ -11,34 +11,34 @@ package textplayer;
  */
 public class CurrentStatus {
 
-    private int volume;
+    private int instrument;
+    private String lastCharacter;
     private int octave;
     private int tempo;
-    private String instrument;
-    private String lastCharacter;
+    private int volume;
 
     public CurrentStatus() {
-        this.volume = 31;
+        this.instrument = 0;
+        this.lastCharacter = "";
         this.octave = 5;
         this.tempo = 120;
-        this.instrument = "0";
-        this.lastCharacter = "";
+        this.volume = 31;
     }
 
-    public CurrentStatus(int volume, int octave, int tempo, String instrument, String lastCharacter) {
-        this.volume = volume;
-        this.octave = octave;
-        this.tempo = tempo;
+    public CurrentStatus(int instrument, String lastCharacter, int octave, int tempo, int volume) {
         this.instrument = instrument;
         this.lastCharacter = lastCharacter;
-    }
-
-    public int getVolume() {
-        return volume;
-    }
-
-    public void setVolume(int volume) {
+        this.octave = octave;
+        this.tempo = tempo;
         this.volume = volume;
+    }
+
+    public int getInstrument() {
+        return instrument;
+    }
+
+    public void setInstrument(int instrument) {
+        this.instrument = instrument;
     }
 
     public String getLastCharacter() {
@@ -65,11 +65,12 @@ public class CurrentStatus {
         this.tempo = tempo;
     }
 
-    public String getInstrument() {
-        return instrument;
+    public int getVolume() {
+        return volume;
     }
 
-    public void setInstrument(String instrument) {
-        this.instrument = instrument;
+    public void setVolume(int volume) {
+        this.volume = volume;
     }
+
 }

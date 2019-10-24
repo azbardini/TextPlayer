@@ -54,7 +54,7 @@ public class CurrentStatus {
     }
 
     public void setOctave(int octave) {
-        this.octave = octave > 10 ? 5 : octave;
+        this.octave = octave > 9 ? 5 : octave;
     }
 
     public String getTempo() {

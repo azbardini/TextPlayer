@@ -17,7 +17,9 @@ public class TextPlayer {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String rawText = "A2B2C!D\nE";
+        
+        //GREAT TEXT: "A2 B2De?fC!D\nE"
+        String rawText = "A2 B2De?fC!D\nE";
 
         CurrentStatus currentStatus = new CurrentStatus();
         Interpreter interpreter = new Interpreter(rawText, currentStatus);

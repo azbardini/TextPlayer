@@ -46,7 +46,7 @@ public class Manager {
 
     public void playTestSong(){
         Player player = new Player();
-        Pattern p1 = new Pattern(":CON(7, 31) C5 C5 C5 :CON(7, 127) C5 C5 C5");
+        Pattern p1 = new Pattern(":CON(7, 31) A5 I2 B5 I4 C5 I114 D5 I15 E5 ");
         player.play(p1);
     }
 }

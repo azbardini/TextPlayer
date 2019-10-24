@@ -45,58 +45,74 @@ public class Interpreter {
         instrumentsDictionary.put(';', "76");
         instrumentsDictionary.put(',', "20");
 
-        String onBuildString = "";
-        String translatedCharacter = "";
-        String currentInstrument = "";
-        String newInstrument = "";
+        String onBuildString;
+        String translatedCharacter;
+        String currentInstrument;
+        String newInstrument;
         int currentOctave;
         int newOctave;
         int newInstrumentNumber;
+        int currentVolume;
+        int newVolume;
+
+        //start volume at currentStatusDefault
+        onBuildString = ":CON(7, ".concat(Integer.toString(currentStatus.getVolume())).concat(") ");
+
         for (char character : this.rawText.toCharArray()) {
 
             //===FIRST CONTROL LAYER===
-            //0 1 2 3 4 5 6 7 8 9
-            if (Character.isDigit(character)) {
-                currentInstrument = currentStatus.getInstrument();
-                newInstrumentNumber = Integer.parseInt(currentInstrument) + Character.getNumericValue(character);
-                newInstrumentNumber = newInstrumentNumber > 127 ? 127 : newInstrumentNumber;
-                newInstrument = Integer.toString(newInstrumentNumber);
-                currentStatus.setInstrument(newInstrument);
-                translatedCharacter = "I".concat(newInstrument);
-                onBuildString = onBuildString.concat(translatedCharacter);
+            // space
+            if (character == ' ') {
+                currentVolume = currentStatus.getVolume();
+                newVolume = currentVolume > 63 ? 31 : currentVolume * 2;
+                onBuildString = onBuildString.concat(":CON(7, ".concat(Integer.toString(newVolume)).concat(")"));
+                currentStatus.setVolume(newVolume);
+
             } else {
 
-                //? .
-                if (character == '?' || character == '.') {
-                    currentOctave = currentStatus.getOctave();
-                    newOctave = ++currentOctave;
-                    currentStatus.setOctave(newOctave);
+                //0 1 2 3 4 5 6 7 8 9
+                if (Character.isDigit(character)) {
+                    currentInstrument = currentStatus.getInstrument();
+                    newInstrumentNumber = Integer.parseInt(currentInstrument) + Character.getNumericValue(character);
+                    newInstrumentNumber = newInstrumentNumber > 127 ? 127 : newInstrumentNumber;
+                    newInstrument = Integer.toString(newInstrumentNumber);
+                    currentStatus.setInstrument(newInstrument);
+                    translatedCharacter = "I".concat(newInstrument);
+                    onBuildString = onBuildString.concat(translatedCharacter);
                 } else {
 
-                    //Try to translate from the instruments map
-                    //! i I o O u U NL ; ,
-                    try {
-                        newInstrument = mapInstrumentToString(character);
-                        currentStatus.setInstrument(newInstrument);
-                        translatedCharacter = "I".concat(newInstrument);
-                        onBuildString = onBuildString.concat(translatedCharacter);
-                    } catch (Exception noInstrumentException) {
+                    //? .
+                    if (character == '?' || character == '.') {
+                        currentOctave = currentStatus.getOctave();
+                        newOctave = ++currentOctave;
+                        currentStatus.setOctave(newOctave);
+                    } else {
 
-                        //===THEN NOTES LAYER===
-                        //Try to translate from the notes map
-                        //A B C D E F G
+                        //Try to translate from the instruments map
+                        //! i I o O u U NL ; ,
                         try {
-                            translatedCharacter = mapNoteToString(character);
+                            newInstrument = mapInstrumentToString(character);
+                            currentStatus.setInstrument(newInstrument);
+                            translatedCharacter = "I".concat(newInstrument);
                             onBuildString = onBuildString.concat(translatedCharacter);
-                            //Adds on the current octave
-                            onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
-                        } catch (Exception noNoteException) {
+                        } catch (Exception noInstrumentException) {
 
-                            //a c b d e f g consoantes todo o resto
-                            translatedCharacter = getDoubleOrRest();
-                            onBuildString = onBuildString.concat(translatedCharacter);
-                            //Adds on the current octave
-                            onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
+                            //===THEN NOTES LAYER===
+                            //Try to translate from the notes map
+                            //A B C D E F G
+                            try {
+                                translatedCharacter = mapNoteToString(character);
+                                onBuildString = onBuildString.concat(translatedCharacter);
+                                //Adds on the current octave
+                                onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
+                            } catch (Exception noNoteException) {
+
+                                //a c b d e f g consoantes todo o resto
+                                translatedCharacter = getDoubleOrRest();
+                                onBuildString = onBuildString.concat(translatedCharacter);
+                                //Adds on the current octave
+                                onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
+                            }
                         }
                     }
                 }

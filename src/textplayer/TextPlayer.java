@@ -17,7 +17,7 @@ public class TextPlayer {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        String rawText = "CDEFGAB";
+        String rawText = "CC CC CC CC CC";
 
         CurrentStatus currentStatus = new CurrentStatus();
         Interpreter interpreter = new Interpreter(rawText, currentStatus);
@@ -25,7 +25,7 @@ public class TextPlayer {
 
         String playable = interpreter.translate();
         System.out.println(playable);
-//        manager.playSong(playable);
-        manager.playTestSong();
+        manager.playSong(playable);
+//        manager.playTestSong();
     }
 }

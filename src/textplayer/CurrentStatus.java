@@ -18,7 +18,7 @@ public class CurrentStatus {
     private String lastCharacter;
 
     public CurrentStatus() {
-        this.volume = 10;
+        this.volume = 31;
         this.octave = 5;
         this.tempo = 120;
         this.instrument = "0";

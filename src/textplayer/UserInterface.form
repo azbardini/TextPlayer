@@ -36,10 +36,6 @@
                               <Component id="buttonStop" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="141" max="-2" attributes="0"/>
-                              <Component id="buttonMidi" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="137" max="-2" attributes="0"/>
                               <Component id="labelTitle" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -68,6 +64,11 @@
               <Component id="labelStatus" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="99" max="32767" attributes="0"/>
           </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="buttonMidi" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="123" max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -93,9 +94,9 @@
                   <Component id="buttonPause" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="buttonStop" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="buttonMidi" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -183,7 +184,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="buttonMidi">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Download Midi"/>
+        <Property name="text" type="java.lang.String" value="Save MIDI Execution"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonMidiActionPerformed"/>

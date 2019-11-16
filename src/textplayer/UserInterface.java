@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
@@ -39,9 +41,6 @@ public class UserInterface extends javax.swing.JFrame {
     private Sequence sequence;
     private ManagedPlayer managedPlayer = new ManagedPlayer();
 
-    private Thread threadPlay;
-    private Thread threadPause;
-
     JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
     /**
@@ -50,6 +49,7 @@ public class UserInterface extends javax.swing.JFrame {
     public UserInterface() {
         initComponents();
         setUpInterface();
+        startEndSongListener();
         // TODO code application logic here        
     }
 
@@ -226,7 +226,11 @@ public class UserInterface extends javax.swing.JFrame {
             Player player = new Player();
             sequence = player.getSequence(pattern);
             managedPlayer = new ManagedPlayer();
-            manager.playSong(managedPlayer, sequence);
+            try {
+                manager.playSong(managedPlayer, sequence);
+            } catch (InvalidMidiDataException | MidiUnavailableException ex) {
+                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         } else {
             System.out.println("Play (Resume) Pressed");
@@ -241,6 +245,7 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void buttonPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPauseActionPerformed
         System.out.println("Pause Pressed");
+
         manager.pauseSong(managedPlayer, sequence);
         labelStatus.setText("Paused");
         buttonPause.setVisible(false);
@@ -293,6 +298,32 @@ public class UserInterface extends javax.swing.JFrame {
         buttonMidi.setVisible(false);
         buttonPause.setVisible(false);
         buttonStop.setVisible(false);
+    }
+
+    void startEndSongListener() {
+        Thread listener;
+        listener = new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    if (managedPlayer.isFinished() && !manager.getExecutionStatus().equals("stopped")) {
+                        System.out.println("Stopped by Thread");
+                        manager.stopSong(managedPlayer, sequence);
+                        labelStatus.setText("Stopped");
+                        buttonStop.setVisible(false);
+                        buttonPause.setVisible(false);
+                        buttonPlay.setVisible(true);
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            }
+        };
+        listener.start();
     }
 
     void saveFile() {

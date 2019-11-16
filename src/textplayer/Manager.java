@@ -5,8 +5,6 @@
  */
 package textplayer;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
@@ -30,58 +28,24 @@ public class Manager {
         this.interpreter = interpreter;
     }
 
-    public void playSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread playSong;
-        playSong = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    managedPlayer.start(sequence);
-                } catch (InvalidMidiDataException | MidiUnavailableException ex) {
-                    Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                setExecutionStatus("executing");
-            }
-        };
-        playSong.start();
+    public void playSong(ManagedPlayer managedPlayer, Sequence sequence) throws InvalidMidiDataException, MidiUnavailableException {
+        managedPlayer.start(sequence);
+        setExecutionStatus("executing");
     }
 
     public void stopSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread stopSong;
-        stopSong = new Thread() {
-            @Override
-            public void run() {
-                managedPlayer.finish();
-                setExecutionStatus("stopped");
-            }
-        };
-        stopSong.start();
+        managedPlayer.finish();
+        setExecutionStatus("stopped");
     }
 
     public void pauseSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread pauseSong;
-        pauseSong = new Thread() {
-            @Override
-            public void run() {
-                if (getExecutionStatus().equals("executing")) {
-                    managedPlayer.pause();
-                    setExecutionStatus("paused");
-                }
-            }
-        };
-        pauseSong.start();
+        managedPlayer.pause();
+        setExecutionStatus("paused");
     }
 
     public void resumeSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread resumeSong;
-        resumeSong = new Thread() {
-            @Override
-            public void run() {
-                managedPlayer.resume();
-                setExecutionStatus("executing");
-            }
-        };
-        resumeSong.start();
+        managedPlayer.resume();
+        setExecutionStatus("executing");
     }
 
     public String getExecutionStatus() {

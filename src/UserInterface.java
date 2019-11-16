@@ -1,4 +1,17 @@
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequence;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileSystemView;
+import org.jfugue.pattern.Pattern;
+import org.jfugue.player.ManagedPlayer;
+import org.jfugue.player.Player;
 import textplayer.CurrentStatus;
 import textplayer.Interpreter;
 import textplayer.Manager;
@@ -12,14 +25,25 @@ import textplayer.Manager;
  *
  * @author bardini
  */
-public class Inteface extends javax.swing.JFrame {
+public class UserInterface extends javax.swing.JFrame {
 
-    private String omg = "AAAAAA";
+    private String rawText;
+    private CurrentStatus currentStatus;
+    private Interpreter interpreter;
+    private Manager manager = new Manager();
+
+    private Sequence sequence;
+    private ManagedPlayer managedPlayer = new ManagedPlayer();
+
+    private Thread threadPlay;
+    private Thread threadPause;
+
+    JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
     /**
      * Creates new form Interface
      */
-    public Inteface() {
+    public UserInterface() {
         initComponents();
         // TODO code application logic here        
     }
@@ -171,32 +195,57 @@ public class Inteface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadActionPerformed
-        // TODO add your handling code here:
+        int returnValue = jfc.showOpenDialog(null);
+        // int returnValue = jfc.showSaveDialog(null);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = jfc.getSelectedFile();
+            System.out.println(selectedFile.getAbsolutePath());
+        }
     }//GEN-LAST:event_buttonLoadActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        // TODO add your handling code here:
+        try {
+            Desktop.getDesktop().open(new File("."));
+        } catch (IOException ex) {
+            Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlayActionPerformed
-        //GREAT TEXT: "A2 B2De?fC!D\nE"
-        labelStatus.setText(omg);
-        String rawText = textArea.getText();
-        CurrentStatus currentStatus = new CurrentStatus();
-        Interpreter interpreter = new Interpreter(rawText, currentStatus);
-        Manager manager = new Manager(interpreter.getRawText(), interpreter);
-        String playable = interpreter.translate();
-        System.out.println(playable);
-        manager.playSong(playable);
-//      manager.playTestSong();
+        if (manager.getExecutionStatus().equals("stopped") || managedPlayer.isFinished()) {
+
+            rawText = textArea.getText();
+            System.out.println("Got text" + rawText);
+
+            System.out.println("Assigning instances...");
+            currentStatus = new CurrentStatus();
+            interpreter = new Interpreter(rawText, currentStatus);
+            manager = new Manager(interpreter.getRawText(), interpreter);
+
+            System.out.println("Translating (" + rawText + ")");
+            String playable = interpreter.translate();
+            System.out.println("Translated to (" + playable + ")");
+
+            System.out.println("Creating patterns and sequences...");
+            Pattern pattern = new Pattern(playable);
+            Player player = new Player();
+            sequence = player.getSequence(pattern);
+            managedPlayer = new ManagedPlayer();
+
+            manager.playSong(managedPlayer, sequence);
+
+        } else {
+            manager.resumeSong(managedPlayer, sequence);
+        }
     }//GEN-LAST:event_buttonPlayActionPerformed
 
     private void buttonPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPauseActionPerformed
-        // TODO add your handling code here:
+        manager.pauseSong(managedPlayer, sequence);
     }//GEN-LAST:event_buttonPauseActionPerformed
 
     private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
-        // TODO add your handling code here:
+        manager.stopSong(managedPlayer, sequence);
     }//GEN-LAST:event_buttonStopActionPerformed
 
     private void buttonMidiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMidiActionPerformed
@@ -220,19 +269,20 @@ public class Inteface extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Inteface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Inteface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Inteface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Inteface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new Inteface().setVisible(true);
+            new UserInterface().setVisible(true);
         });
     }
 

@@ -6,6 +6,11 @@
  */
 package textplayer;
 
+import javax.sound.midi.Sequence;
+import org.jfugue.pattern.Pattern;
+import org.jfugue.player.ManagedPlayer;
+import org.jfugue.player.Player;
+
 /**
  *
  * @author bardini
@@ -27,7 +32,18 @@ public class TextPlayer {
 
         String playable = interpreter.translate();
         System.out.println(playable);
-        manager.playSong(playable);
-//        manager.playTestSong();
+//        manager.playSong(playable);
+        
+        Pattern pattern = new Pattern(playable);
+        Player player = new Player();
+        Sequence sequence = player.getSequence(pattern);
+        ManagedPlayer managedPlayer = new ManagedPlayer();
+        
+        PlaySong PlaySong = new PlaySong(managedPlayer, sequence);
+        Thread threadPlay = new Thread(PlaySong);
+        threadPlay.start();
+        
+        //REMOVE
+        //saveMidi(formattedText);
     }
 }

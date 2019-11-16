@@ -11,18 +11,13 @@ package textplayer;
  */
 public class CurrentStatus {
 
-    private int instrument;
-    private String lastCharacter;
-    private int octave;
-    private int tempo;
-    private int volume;
+    private int instrument = 0;
+    private String lastCharacter = "";
+    private int octave = 5;
+    private int tempo = 120;
+    private int volume = 31;
 
     public CurrentStatus() {
-        this.instrument = 0;
-        this.lastCharacter = "";
-        this.octave = 5;
-        this.tempo = 120;
-        this.volume = 31;
     }
 
     public CurrentStatus(int instrument, String lastCharacter, int octave, int tempo, int volume) {

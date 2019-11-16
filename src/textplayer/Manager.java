@@ -31,13 +31,13 @@ public class Manager {
     }
 
     public void playSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread playSong = new Thread() {
+        Thread playSong;
+        playSong = new Thread() {
+            @Override
             public void run() {
                 try {
                     managedPlayer.start(sequence);
-                } catch (InvalidMidiDataException ex) {
-                    Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (MidiUnavailableException ex) {
+                } catch (InvalidMidiDataException | MidiUnavailableException ex) {
                     Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 setExecutionStatus("executing");
@@ -47,7 +47,9 @@ public class Manager {
     }
 
     public void stopSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread stopSong = new Thread() {
+        Thread stopSong;
+        stopSong = new Thread() {
+            @Override
             public void run() {
                 managedPlayer.finish();
                 setExecutionStatus("stopped");
@@ -57,7 +59,9 @@ public class Manager {
     }
 
     public void pauseSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread pauseSong = new Thread() {
+        Thread pauseSong;
+        pauseSong = new Thread() {
+            @Override
             public void run() {
                 if (getExecutionStatus().equals("executing")) {
                     managedPlayer.pause();
@@ -69,7 +73,9 @@ public class Manager {
     }
 
     public void resumeSong(ManagedPlayer managedPlayer, Sequence sequence) {
-        Thread resumeSong = new Thread() {
+        Thread resumeSong;
+        resumeSong = new Thread() {
+            @Override
             public void run() {
                 managedPlayer.resume();
                 setExecutionStatus("executing");

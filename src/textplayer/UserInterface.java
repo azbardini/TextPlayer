@@ -1,20 +1,23 @@
+package textplayer;
 
-import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
+import org.jfugue.midi.MidiFileManager;
 import org.jfugue.pattern.Pattern;
 import org.jfugue.player.ManagedPlayer;
 import org.jfugue.player.Player;
-import textplayer.CurrentStatus;
-import textplayer.Interpreter;
-import textplayer.Manager;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -31,6 +34,7 @@ public class UserInterface extends javax.swing.JFrame {
     private CurrentStatus currentStatus;
     private Interpreter interpreter;
     private Manager manager = new Manager();
+    private Pattern pattern;
 
     private Sequence sequence;
     private ManagedPlayer managedPlayer = new ManagedPlayer();
@@ -120,7 +124,7 @@ public class UserInterface extends javax.swing.JFrame {
         labelStatus.setFont(new java.awt.Font("Garuda", 0, 18)); // NOI18N
         labelStatus.setText("Stopped");
 
-        buttonMidi.setText("Download Midi");
+        buttonMidi.setText("Save MIDI Execution");
         buttonMidi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonMidiActionPerformed(evt);
@@ -143,9 +147,6 @@ public class UserInterface extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(buttonStop))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(141, 141, 141)
-                                .addComponent(buttonMidi))
-                            .addGroup(layout.createSequentialGroup()
                                 .addGap(137, 137, 137)
                                 .addComponent(labelTitle)))
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -165,6 +166,10 @@ public class UserInterface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(labelStatus)
                 .addContainerGap(99, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonMidi)
+                .addGap(123, 123, 123))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -186,70 +191,67 @@ public class UserInterface extends javax.swing.JFrame {
                     .addComponent(buttonPlay)
                     .addComponent(buttonPause)
                     .addComponent(buttonStop))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonMidi)
-                .addGap(13, 13, 13))
+                .addGap(19, 19, 19))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoadActionPerformed
-        int returnValue = jfc.showOpenDialog(null);
-        // int returnValue = jfc.showSaveDialog(null);
-
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = jfc.getSelectedFile();
-            System.out.println(selectedFile.getAbsolutePath());
-        }
+        loadFile();
     }//GEN-LAST:event_buttonLoadActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-        try {
-            Desktop.getDesktop().open(new File("."));
-        } catch (IOException ex) {
-            Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        saveFile();
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlayActionPerformed
         if (manager.getExecutionStatus().equals("stopped") || managedPlayer.isFinished()) {
+            System.out.println("Play Pressed");
 
             rawText = textArea.getText();
-            System.out.println("Got text" + rawText);
+            System.out.println("Got text (" + rawText + ")");
 
             System.out.println("Assigning instances...");
             currentStatus = new CurrentStatus();
             interpreter = new Interpreter(rawText, currentStatus);
             manager = new Manager(interpreter.getRawText(), interpreter);
 
-            System.out.println("Translating (" + rawText + ")");
+            System.out.println("Translating...");
             String playable = interpreter.translate();
             System.out.println("Translated to (" + playable + ")");
 
             System.out.println("Creating patterns and sequences...");
-            Pattern pattern = new Pattern(playable);
+            pattern = new Pattern(playable);
             Player player = new Player();
             sequence = player.getSequence(pattern);
             managedPlayer = new ManagedPlayer();
-
             manager.playSong(managedPlayer, sequence);
 
         } else {
+            System.out.println("Play (Resume) Pressed");
             manager.resumeSong(managedPlayer, sequence);
         }
+        labelStatus.setText("Executing");
     }//GEN-LAST:event_buttonPlayActionPerformed
 
     private void buttonPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPauseActionPerformed
+        System.out.println("Pause Pressed");
         manager.pauseSong(managedPlayer, sequence);
+        labelStatus.setText("Paused");
     }//GEN-LAST:event_buttonPauseActionPerformed
 
     private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
+        System.out.println("Stop Pressed");
         manager.stopSong(managedPlayer, sequence);
+        labelStatus.setText("Stopped");
     }//GEN-LAST:event_buttonStopActionPerformed
 
     private void buttonMidiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMidiActionPerformed
-        // TODO add your handling code here:
+        System.out.println("Save MIDI Pressed");
+        saveMidiExecution();
     }//GEN-LAST:event_buttonMidiActionPerformed
 
     /**
@@ -268,22 +270,65 @@ public class UserInterface extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             new UserInterface().setVisible(true);
         });
+    }
+
+    void saveFile() {
+        String filePath = getPathUsingExplorer();
+        rawText = textArea.getText();
+        try (PrintStream out = new PrintStream(new FileOutputStream(filePath))) {
+            out.print(rawText);
+            System.out.println("Saved File");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    void loadFile() {
+        String filePath = getPathUsingExplorer();
+        try {
+            String content = readFile(filePath, StandardCharsets.UTF_8);
+            textArea.setText(content);
+            System.out.println("Loaded File");
+        } catch (IOException ex) {
+            Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    void saveMidiExecution() {
+        String filePath = getPathUsingExplorer();
+        try {
+            MidiFileManager.savePatternToMidi(pattern, new File(filePath));
+            System.out.println("Saved MIDI");
+        } catch (IOException e) {
+            System.out.println("Error saving MIDI file");
+            System.exit(0);
+        }
+    }
+
+    String getPathUsingExplorer() {
+        int returnValue = jfc.showSaveDialog(null);
+        File selectedFile;
+        String filepath = "";
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            selectedFile = jfc.getSelectedFile();
+            filepath = selectedFile.getAbsolutePath();
+        }
+        return filepath;
+    }
+
+    static String readFile(String path, Charset encoding)
+            throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

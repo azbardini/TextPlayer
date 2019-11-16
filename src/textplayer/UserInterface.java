@@ -49,6 +49,7 @@ public class UserInterface extends javax.swing.JFrame {
      */
     public UserInterface() {
         initComponents();
+        setUpInterface();
         // TODO code application logic here        
     }
 
@@ -97,7 +98,7 @@ public class UserInterface extends javax.swing.JFrame {
             }
         });
 
-        buttonPlay.setText("Play");
+        buttonPlay.setText(" Play  ");
         buttonPlay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonPlayActionPerformed(evt);
@@ -142,6 +143,8 @@ public class UserInterface extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(buttonMidi)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(buttonSave)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(buttonLoad))
@@ -149,26 +152,23 @@ public class UserInterface extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(104, 104, 104)
-                                .addComponent(buttonPlay)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonPause)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonStop))
-                            .addGroup(layout.createSequentialGroup()
                                 .addGap(137, 137, 137)
                                 .addComponent(labelTitle))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(96, 96, 96)
                                 .addComponent(fixedLabelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelStatus)))
-                        .addGap(0, 93, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(123, 123, 123)
-                .addComponent(buttonMidi)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(134, 134, 134)
+                .addComponent(buttonPlay)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonPause)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonStop)
+                .addContainerGap(65, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,19 +180,18 @@ public class UserInterface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonSave)
-                    .addComponent(buttonLoad))
+                    .addComponent(buttonLoad)
+                    .addComponent(buttonMidi))
                 .addGap(45, 45, 45)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fixedLabelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelStatus))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonPlay)
                     .addComponent(buttonPause)
+                    .addComponent(buttonPlay)
                     .addComponent(buttonStop))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonMidi)
-                .addGap(19, 19, 19))
+                .addGap(32, 32, 32))
         );
 
         pack();
@@ -234,18 +233,28 @@ public class UserInterface extends javax.swing.JFrame {
             manager.resumeSong(managedPlayer, sequence);
         }
         labelStatus.setText("Executing");
+        buttonPlay.setVisible(false);
+        buttonPause.setVisible(true);
+        buttonStop.setVisible(true);
+        buttonMidi.setVisible(true);
     }//GEN-LAST:event_buttonPlayActionPerformed
 
     private void buttonPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPauseActionPerformed
         System.out.println("Pause Pressed");
         manager.pauseSong(managedPlayer, sequence);
         labelStatus.setText("Paused");
+        buttonPause.setVisible(false);
+        buttonStop.setVisible(true);
+        buttonPlay.setVisible(true);
     }//GEN-LAST:event_buttonPauseActionPerformed
 
     private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
         System.out.println("Stop Pressed");
         manager.stopSong(managedPlayer, sequence);
         labelStatus.setText("Stopped");
+        buttonStop.setVisible(false);
+        buttonPause.setVisible(false);
+        buttonPlay.setVisible(true);
     }//GEN-LAST:event_buttonStopActionPerformed
 
     private void buttonMidiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonMidiActionPerformed
@@ -277,6 +286,13 @@ public class UserInterface extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             new UserInterface().setVisible(true);
         });
+
+    }
+
+    void setUpInterface() {
+        buttonMidi.setVisible(false);
+        buttonPause.setVisible(false);
+        buttonStop.setVisible(false);
     }
 
     void saveFile() {

@@ -48,16 +48,6 @@ public class Interpreter {
         String onBuildString;
         String translatedCharacter;
 
-        int currentInstrumentNumber;
-        int newInstrumentNumber;
-        String newInstrument;
-
-        int currentOctave;
-        int newOctave;
-
-        int currentVolume;
-        int newVolume;
-
         //start volume at currentStatusDefault
         onBuildString = ":CON(7, ".concat(Integer.toString(currentStatus.getVolume())).concat(") ");
 
@@ -66,58 +56,52 @@ public class Interpreter {
             //===FIRST CONTROL LAYER===
             // space
             if (character == ' ') {
-                currentVolume = currentStatus.getVolume();
-                newVolume = currentVolume > 63 ? 31 : currentVolume * 2;
-                onBuildString = onBuildString.concat(":CON(7, ".concat(Integer.toString(newVolume)).concat(")"));
+                int currentVolume = currentStatus.getVolume();
+                int newVolume = currentVolume > 63 ? 31 : currentVolume * 2;
                 currentStatus.setVolume(newVolume);
-
-            } else {
-
+                
+                onBuildString = onBuildString.concat(":CON(7, ".concat(Integer.toString(newVolume)).concat(")"));
+                
+            } else if (Character.isDigit(character)) {
                 //0 1 2 3 4 5 6 7 8 9
-                if (Character.isDigit(character)) {
-                    currentInstrumentNumber = currentStatus.getInstrument();
-                    newInstrumentNumber = currentInstrumentNumber + Character.getNumericValue(character);
-                    newInstrumentNumber = newInstrumentNumber > 127 ? 127 : newInstrumentNumber;
-                    currentStatus.setInstrument(newInstrumentNumber);
-                    translatedCharacter = "I".concat(Integer.toString(newInstrumentNumber));
+                currentStatus.incrementInstrument( Character.getNumericValue(character) );
+                
+                translatedCharacter = "I".concat(Integer.toString(currentStatus.getInstrument()));
+                onBuildString = onBuildString.concat(translatedCharacter);
+                
+            } else if (character == '?' || character == '.') {
+                //? .
+                currentStatus.addOctave();
+                
+            } else {
+                
+                //Try to translate from the instruments map
+                //! i I o O u U NL ; ,
+                try {
+                    String newInstrument = mapInstrumentToString(character);
+                    currentStatus.setInstrument(Integer.parseInt(newInstrument));
+                    translatedCharacter = "I".concat(newInstrument);
+                    
                     onBuildString = onBuildString.concat(translatedCharacter);
-                } else {
+                } catch (Exception noInstrumentException) {
 
-                    //? .
-                    if (character == '?' || character == '.') {
-                        currentOctave = currentStatus.getOctave();
-                        newOctave = ++currentOctave;
-                        currentStatus.setOctave(newOctave);
-                    } else {
+                    //===THEN NOTES LAYER===
+                    //Try to translate from the notes map
+                    //A B C D E F G
+                    try {
+                        translatedCharacter = mapNoteToString(character);
+                        onBuildString = onBuildString.concat(translatedCharacter);
+                        //Adds on the current octave
+                        onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
+                    } catch (Exception noNoteException) {
 
-                        //Try to translate from the instruments map
-                        //! i I o O u U NL ; ,
-                        try {
-                            newInstrument = mapInstrumentToString(character);
-                            currentStatus.setInstrument(Integer.parseInt(newInstrument));
-                            translatedCharacter = "I".concat(newInstrument);
-                            onBuildString = onBuildString.concat(translatedCharacter);
-                        } catch (Exception noInstrumentException) {
-
-                            //===THEN NOTES LAYER===
-                            //Try to translate from the notes map
-                            //A B C D E F G
-                            try {
-                                translatedCharacter = mapNoteToString(character);
-                                onBuildString = onBuildString.concat(translatedCharacter);
-                                //Adds on the current octave
-                                onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
-                            } catch (Exception noNoteException) {
-
-                                //a c b d e f g consoantes todo o resto
-                                translatedCharacter = getDoubleOrRest();
-                                onBuildString = onBuildString.concat(translatedCharacter);
-                                //Adds on the current octave
-                                onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
-                            }
-                        }
+                        //a c b d e f g consoantes todo o resto
+                        translatedCharacter = getDoubleOrRest();
+                        onBuildString = onBuildString.concat(translatedCharacter);
+                        //Adds on the current octave
+                        onBuildString = onBuildString.concat(Integer.toString(currentStatus.getOctave()));
                     }
-                }
+                }    
             }
             onBuildString = onBuildString.concat(space);
             currentStatus.setLastCharacter(Character.toString(character));

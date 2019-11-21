@@ -27,7 +27,20 @@ public class CurrentStatus {
         this.tempo = tempo;
         this.volume = volume;
     }
-
+    
+    public void addOctave(){
+        int currentOctave = getOctave();
+        int newOctave = ++currentOctave;
+        setOctave(newOctave);
+    }
+    
+    public void incrementInstrument(int incremento){
+        int currentInstrumentNumber = getInstrument();
+        int newInstrumentNumber = currentInstrumentNumber + incremento;
+        newInstrumentNumber = newInstrumentNumber > 127 ? 127 : newInstrumentNumber;
+        setInstrument(newInstrumentNumber);
+    }
+    
     public int getInstrument() {
         return instrument;
     }
